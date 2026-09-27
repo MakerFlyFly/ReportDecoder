@@ -1,0 +1,17 @@
+name: 改进建议
+description: 建议新的能力、文档或公开示例
+labels: [enhancement]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: 使用场景与当前问题
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 希望获得的行为
+      description: 可说明输入、输出和一个可公开的例子。
+    validations:
+      required: true

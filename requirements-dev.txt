@@ -1,0 +1,2 @@
+# Only for project metadata/link checks; the PDF helper uses the standard library.
+PyYAML>=6.0,<7.0

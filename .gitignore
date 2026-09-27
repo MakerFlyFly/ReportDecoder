@@ -1,0 +1,27 @@
+# Local reports, generated notes, and private review material
+/.reading-work/
+/.validation/
+/outputs/
+/dist/
+/tmp/
+/*.zip
+
+# Python and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

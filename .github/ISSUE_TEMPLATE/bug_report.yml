@@ -1,0 +1,27 @@
+name: 问题反馈
+description: 报告可复现的阅读规则或 PDF 工具问题
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请使用虚构或可公开的最小材料，不上传个人研报、身份信息或无权分发的 PDF。
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统、Python/Poppler 版本，以及使用的宿主。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 提供命令或请求，以及可公开的最小示例。
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 实际结果与期望结果
+    validations:
+      required: true

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.12']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils poppler-data fonts-noto-cjk
+          python -m pip install -r requirements-dev.txt
+      - name: Require Poppler
+        run: python research-report-reader/scripts/pdf_tools.py doctor
+      - name: Validate project and public sample
+        run: python scripts/validate_project.py
+      - name: Run PDF tests
+        run: python -m unittest discover -s research-report-reader/tests -v
+      - name: Build and verify installable package
+        run: python scripts/package_skill.py

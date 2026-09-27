@@ -1,0 +1,15 @@
+{
+  "title": "Short-Term Energy Outlook Supplement: Uncertainties in the Short-Term Global Petroleum and Other Liquids Supply Forecast",
+  "publisher": "U.S. Energy Information Administration",
+  "publication_date": "2014-02",
+  "retrieved_date": "2026-09-27",
+  "url": "https://www.eia.gov/outlooks/steo/special/pdf/2014_sp_01.pdf",
+  "rights_url": "https://www.eia.gov/about/copyrights_reuse.php",
+  "rights_basis": "U.S. government publication; distributed with attribution under EIA's Copyrights and Reuse policy. Not relicensed as MIT.",
+  "file": "source.pdf",
+  "sha256": "af0858c0b212401518e4eefbb445647cfed59e4e56376544e6c9bcfa4530a758",
+  "pages": 8,
+  "language": "en",
+  "analysis": "analysis.zh-CN.md",
+  "analysis_language": "zh-CN"
+}
