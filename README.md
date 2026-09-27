@@ -10,7 +10,7 @@ ReportDecoder 先判断报告类型，再梳理研究重点、依据、推导和
 
 **English:** A portable skill for Codex and Claude Code that turns financial and economic research PDFs into structured Chinese reading notes. It separates arguments from market observations, preserves data and forecast conditions, and anonymizes source identities. PDF preparation runs locally with Python and Poppler; reasoning and writing are performed by the host agent.
 
-## 看一个完整示例
+## 示例丨sample
 
 以 EIA 于 2014 年 2 月公开发布的全球石油供给预测研究为输入，演示背景、供给假设、预测偏差与地区风险的拆解：
 
