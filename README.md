@@ -16,9 +16,9 @@ ReportDecoder 先判断报告类型，再梳理研究重点、依据、推导和
 
 - [示例说明与复现方法](samples/eia-2014-oil-supply/README.md)
 - [官方原始 PDF](samples/eia-2014-oil-supply/source.pdf)
-- [生成的中文匿名解读](samples/eia-2014-oil-supply/analysis.zh-CN.md)
+- [生成的解读](samples/eia-2014-oil-supply/analysis.zh-CN.md)
 
-示例原文保留历史预测时点。来源、署名及使用条款独立记录在示例说明中；它们不混入匿名解读正文。
+示例原文保留历史预测时点。来源、署名及使用条款独立记录在示例说明中。
 
 ## 能做什么
 
