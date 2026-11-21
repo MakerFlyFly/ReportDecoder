@@ -1,111 +1,77 @@
-# ReportDecoder · 研报阅读 Skill
+# ReportDecoder
+
+**读懂研报的证据、推导和结论。**
+
+面向 Codex 和 Claude Code 的研报解码 Skill。把文字版金融与经济研报 PDF 整理成中文精读笔记，保留原文主体、数据口径和结论条件。
+
+[查看公开示例](#示例丨sample) · [安装与调用](#安装与调用)
+
+![墨蓝桌面上的米白研报、供需折线与铜色边注](docs/images/reportdecoder-hero.png)
 
 [![CI](https://github.com/MakerFlyFly/ReportDecoder/actions/workflows/ci.yml/badge.svg)](https://github.com/MakerFlyFly/ReportDecoder/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-
-输入一份文字版金融或经济研报 PDF，得到按论证关系组织的中文精读笔记。
-
-ReportDecoder 先判断报告类型，再梳理研究重点、依据、推导和结论。论证段落保留必要背景与假设，行情和高频指标使用简短段落或表格。默认隐藏企业、人物、机构和来源身份，同时保留关键数值、期间、条件与不确定性。
-
-**English:** A portable skill for Codex and Claude Code that turns financial and economic research PDFs into structured Chinese reading notes. It separates arguments from market observations, preserves data and forecast conditions, and anonymizes source identities. PDF preparation runs locally with Python and Poppler; reasoning and writing are performed by the host agent.
 
 ## 示例丨sample
 
-以 EIA 于 2014 年 2 月公开发布的全球石油供给预测研究为输入，演示背景、供给假设、预测偏差与地区风险的拆解：
+美国能源信息署（EIA）在 2013 年初预计，当年全球液体燃料供给将增加 100 万桶/日。2014 年 2 月报告对同一年给出的后续估计约为 60 万桶/日。笔记从这次预测偏差出发，梳理 OPEC 停产如何影响供给，以及 2014—2015 年基准预测面临哪些风险。
 
-- [示例说明与复现方法](samples/eia-2014-oil-supply/README.md)
-- [官方原始 PDF](samples/eia-2014-oil-supply/source.pdf)
-- [生成的解读](samples/eia-2014-oil-supply/analysis.zh-CN.md)
+[原始 PDF](samples/eia-2014-oil-supply/source.pdf) · [中文解码](samples/eia-2014-oil-supply/decode.zh-CN.md) · [匿名解读](samples/eia-2014-oil-supply/analysis.zh-CN.md)
 
-示例原文保留历史预测时点。来源、署名及使用条款独立记录在示例说明中。
+报告来源、署名、使用条款和复现步骤见 [示例说明](samples/eia-2014-oil-supply/README.md)。
 
-## 能做什么
+[![EIA 的全球供给增量。2013 年初预测为 100 万桶/日，后续估计约 60 万桶/日。2014 年和 2015 年当时的预测分别为 170 和 140 万桶/日。](docs/images/eia-decode-preview.jpg)](samples/eia-2014-oil-supply/decode.zh-CN.md)
 
-- 按宏观、行业、策略、公司、固收、量化、基金、衍生品、大宗商品等类别归类，允许并列类别。
-- 通读文字与图表，合并重复表述，保留独立观点、重要子观点和风险条件。
-- 区分事实观察、历史比较、模型测算、条件推演与实际验证。
-- 用自然的中文表达；首次引入“某分析”，后续使用“该分析”或省略清楚的主语。
-- 保留关键数值和统计口径，对影响理解的原文差异或计算缺口简短说明。
-- 保存完整 Markdown，聊天中提供分类、导读和文件链接。
+## 两种读法
 
-当前一次处理一份中英文文字版 PDF，输出为简体中文。整篇扫描件不在本版范围内。文字版 PDF 中的图片图表会按需渲染阅读。默认只还原输入报告，不联网更新数据，也不额外给出投资判断。
+- **默认解码**保留帮助理解论证的真实公司、机构、报告和数据来源。页码、图表号或原文链接按需要保留。
+- **匿名解读**在用户明确要求时启用。主体换为稳定称谓，隐藏可识别的出处，同时保留研究判断及相关数据。
+
+两种读法都先归类，再通读正文和图表。论证段落说明研究重点、必要假设、证据与结论。行情和观察数据采用简短段落或表格，保留时间、单位和口径。
+
+每次可读一份中英文**文字版 PDF**，输出为简体中文 Markdown。报告内的图片图表可渲染阅读，纯扫描件需要先取得可用的文字层。宿主模型负责解读，Python 和 Poppler 负责本地读取文件。
 
 ## 安装与调用
 
-从 [Releases](https://github.com/MakerFlyFly/ReportDecoder/releases) 下载 skill ZIP 并解压，或克隆本仓库：
+从 Release 下载 ZIP 后解压，或使用当前工作区，把完整的 `research-report-reader` 目录复制到工具的 skill 目录。 [下载最新版](https://github.com/MakerFlyFly/ReportDecoder/releases/latest)
 
-```bash
-git clone https://github.com/MakerFlyFly/ReportDecoder.git
-```
+- **Codex** 使用项目的 `.agents/skills/` 或个人的 `~/.agents/skills/`。
+- **Claude Code** 使用项目的 `.claude/skills/` 或个人的 `~/.claude/skills/`。
 
-将完整的 `research-report-reader` 文件夹复制到相应目录，不要只复制入口文件。
-
-| 平台 | 当前项目 | 个人跨项目 | 显式调用 |
-|---|---|---|---|
-| Codex | `.agents/skills/research-report-reader` | `~/.agents/skills/research-report-reader` | `$research-report-reader 阅读这份 PDF：<路径>` |
-| Claude Code | `.claude/skills/research-report-reader` | `~/.claude/skills/research-report-reader` | `/research-report-reader <路径>` |
-
-安装后让宿主重新加载 skill，必要时重启会话。两端共用同一套文件，不需要独立模型 API 密钥或 MCP 服务。读取和写作由宿主模型执行，Python 脚本本身不会调用模型。
-
-### 运行依赖
-
-- Python **3.9+**。
-- Poppler 原生程序：`pdfinfo`、`pdftotext`、`pdftoppm`。
-- 日常 PDF 脚本只使用 Python 标准库。
-
-macOS 可通过 `brew install poppler` 安装，Ubuntu/Debian 可通过 `sudo apt-get install poppler-utils poppler-data` 安装。Windows 将已有 Poppler 原生 `.exe` 所在目录加入 PATH，或在脚本子命令后指定 `--poppler-dir`。如果系统使用 `python3`，将示例中的 `python` 替换为 `python3`。
-
-在仓库根目录检查依赖：
+运行依赖为 **Python 3.9+** 和 Poppler 原生程序 `pdfinfo`、`pdftotext`、`pdftoppm`。从项目根目录可检查依赖。
 
 ```bash
 python research-report-reader/scripts/pdf_tools.py doctor
 ```
 
-详细命令、返回码和图表处理方法见 [使用说明](research-report-reader/USAGE.md)。
-
-## 输入与输出
-
-示例请求：
+安装后重新加载 skill，在对话中附上 PDF，或提供工作区文件路径。默认请求可写成下面这样。
 
 ```text
-使用 research-report-reader 阅读 samples/eia-2014-oil-supply/source.pdf，
-生成完整的中文匿名精读笔记，输出到 outputs。
+使用 research-report-reader 解码这份研报，讲清证据如何导向结论。
 ```
 
-笔记包含分类、导读、主题目录和正文。解释原因或预测的内容按背景、研究重点、关键假设、依据与推导、结论组织，不适用的栏目省略。描述性数据使用段落或表格，不填充空栏目。
+需要匿名时，在请求中明确指定。
 
-输出默认保存到调用工作区的 `outputs`，采用匿名文件名。个人报告、生成笔记和含身份的中间材料应留在本机；本仓库的公开 sample 有单独的来源与使用说明。
+```text
+使用 research-report-reader 匿名解读这份研报。
+```
+
+从 `v0.1.0` 升级后，普通调用默认保留原文信息。想沿用旧版的匿名输出时，在原请求里加上“匿名解读”。笔记默认保存在工作区的 `outputs`，聊天里会给出导读与文件链接。 [完整使用说明](research-report-reader/USAGE.md)
 
 ## 开发与验证
 
-以下命令在仓库根目录运行：
+在仓库根目录运行下列命令。
 
 ```bash
 python -m pip install -r requirements-dev.txt
 python scripts/validate_project.py
-python research-report-reader/scripts/pdf_tools.py doctor
 python -m unittest discover -s research-report-reader/tests -v
-python scripts/package_skill.py
+python scripts/package_skill.py --output-dir tmp/skill-build
 ```
 
-CI 在 Ubuntu 22.04 的 Python 3.9 和 3.12 环境运行上述检查。`doctor` 必须先通过，避免缺少 Poppler 时集成测试被跳过。现有测试覆盖中文与特殊字符路径、空白页、无文字层、密码保护、损坏输入、局部失败、原文件变更和输出不覆盖。
-
-公开示例另经过全文、图表和数值核对。CI 检查文件、链接、元数据、原始 PDF 校验值和安装包；它不自动调用模型，也不将固定观点数或固定措辞视为阅读质量标准。具体范围见 [验收说明](research-report-reader/VALIDATION.md)。
-
-安装包输出到 `dist`，只含 skill、使用说明、模板、脚本、虚构测试材料及许可证。原始 sample 和中文解读保留在 GitHub 仓库中。可从任意目录调用打包脚本，它不依赖本机 Codex 安装路径。
-
-## 项目结构
-
-```text
-research-report-reader/   可独立安装的 skill、PDF 工具及测试
-samples/                 公开报告、出处与使用说明、中文解读
-scripts/                 项目检查与打包工具
-.github/                 CI、问题反馈和 PR 模板
-```
-
-欢迎通过 [贡献说明](CONTRIBUTING.md) 提交改进或公开可用的案例。
+CI 在 Ubuntu 22.04 的 Python 3.9 和 3.12 环境校验链接、样例 PDF、17 项 PDF 工具测试与安装包。上面的命令把本地校验包保存到 `tmp/skill-build`。 [验收说明](research-report-reader/VALIDATION.md) · [贡献说明](CONTRIBUTING.md)
 
 ## 许可证
 
-项目原创代码、skill 文档、模板和原创解读采用 [MIT](LICENSE)。示例原文保留其自身权利状态和署名要求，不重新声明为 MIT；详见 [第三方材料说明](THIRD_PARTY_NOTICES.md)。
+项目的原创代码、文档、模板和解读采用 MIT。示例原文沿用发布方的权利与署名要求。 [MIT 许可证](LICENSE) · [第三方材料说明](THIRD_PARTY_NOTICES.md)
+
+**English** · ReportDecoder is a Codex and Claude Code skill for reading financial and economic research PDFs. It produces Chinese Markdown notes that trace the author's evidence and reasoning, with optional anonymization.

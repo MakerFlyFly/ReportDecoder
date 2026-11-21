@@ -9,18 +9,18 @@ python -m pip install -r requirements-dev.txt
 python scripts/validate_project.py
 python research-report-reader/scripts/pdf_tools.py doctor
 python -m unittest discover -s research-report-reader/tests -v
-python scripts/package_skill.py
+python scripts/package_skill.py --output-dir tmp/skill-build
 ```
 
 项目检查覆盖 skill 元数据、相对链接、公开 sample 的出处信息与 PDF 校验值。带 `--staged` 参数时还检查 Git 已暂存/跟踪文件是否处于公开目录，拒绝个人输出、临时目录和旧压缩包。
 
 17 项 PDF 工具测试使用随包的虚构文件，覆盖按页提取、中文和特殊字符路径、空白页、图片页、密码保护、损坏输入、超时、局部失败、源文件变更和输出不覆盖。CI 先要求 `doctor` 通过，避免缺少 Poppler 时测试被跳过。
 
-安装包使用明确文件清单，规范文本换行和归档时间；构建后检查内容、CRC、MIT 许可证和解压后的资源链接。它不会打包公开 sample 之外的原始材料，也不会打包工作目录的个人文件。
+安装包使用明确文件清单，规范文本换行和归档时间。构建后检查内容、CRC、MIT 许可证和解压后的资源链接。公开样例与 README 图片随仓库提供。
 
 ## 公开 sample 的内容核对
 
-[公开 sample](https://github.com/MakerFlyFly/ReportDecoder/tree/main/samples/eia-2014-oil-supply) 为 2014 年 2 月的一份英文石油供给研究。原始 PDF 共 8 页，已完整提取文字并查看所有页面，3 幅图表均经视觉核对。
+[公开 sample](https://github.com/MakerFlyFly/ReportDecoder/tree/main/samples/eia-2014-oil-supply) 为 2014 年 2 月的一份英文石油供给研究。原始 PDF 共 8 页，已逐页阅读提取文本，并视觉核对 3 幅图表。新版规则在 Codex 中以同一 PDF 分别试读默认解码和显式匿名两种写法。
 
 中文解读覆盖全球基准供给、上一年的预测偏差、产油国组织的剩余产能假设，以及利比亚、尼日利亚、伊朗、伊拉克、其他组织外产油国、美国陆上和海上、哈萨克斯坦新项目、北海检修等重要论点。
 
@@ -31,7 +31,8 @@ python scripts/package_skill.py
 - 供给高于预测与供给低于预测的方向明确；不把供给上行误写成油价上涨。
 - 对利比亚恢复、伊朗制裁、伊拉克扩容、美国钻井效率和项目延期的条件判断分别保留。
 - 南苏丹中断量下降同时涉及生产恢复与有效产能下修，不能只保留其中一个原因。
-- 匿名表达保持企业、机构、人物与直接识别项目的称谓一致；出处与使用说明单列于 sample README。
+- 默认解码保留 EIA、OPEC、Shell、NOAA 以及对理解论证有帮助的项目名称、图表说明和页码定位。
+- 显式匿名使用稳定的称谓，隐藏机构、企业、撰稿人与可识别项目的原名及出处。两种输出均保留数值、统计口径与判断条件。
 
 阅读质量通过逐段语义核对和连续通读检查，不按固定观点数、栏目数或逐字一致性评分。CI 不调用模型，也不能代替上述内容审阅。
 

@@ -2,9 +2,9 @@
 
 ## 文件包与环境
 
-这是一个由宿主模型执行阅读和写作的 skill。PDF 脚本负责按页提取、渲染和分配匿名输出文件名，不会自行调用模型或生成研报结论。
+阅读和写作由宿主模型完成。PDF 脚本负责按页提取、渲染和分配笔记文件名。
 
-当前写作规则为第 2 版：论证型内容按背景、研究重点、关键假设、依据与推导、结论组织，不适用的栏目省略；行情与指标跟踪用短段落或表格。首次用“某分析”引入，后续自然承接。完整性按原文内容核对，不要求固定观点数或每项都有五个栏目。
+普通调用默认按原文解码。有助于理解的原名、数据来源和原文定位可写入笔记。明确要求“匿名解读”时，同一入口会启用匿名规则。论证型内容按背景、研究重点、关键假设、依据与推导、结论组织，栏目按需使用。行情与指标跟踪用短段落或表格。
 
 运行脚本需要 Python 3.9 或更高版本，以及 Poppler 的 `pdfinfo`、`pdftotext`、`pdftoppm`。脚本只使用 Python 标准库。所有工具需要位于 PATH；也可在子命令之后用 `--poppler-dir` 指定可执行文件目录。Windows 要指向含三个 `.exe` 的目录，而不是 `.cmd` 包装器目录。
 
@@ -21,16 +21,14 @@
 
 Windows 中 `~` 通常指用户个人目录。Codex 也可按所在环境的现有个人 skill 目录放置；上表使用当前官方文档列出的发现路径。若未发现新 skill，重新加载 skills 或重启会话。
 
-两端均可自然语言要求“使用这份 skill 阅读这份研报，结果保存到指定目录”。例如：
+两端都支持自然语言调用。根据需要选择一种提示。
 
-```text
-使用 research-report-reader 阅读 D:\Reports\input.pdf，
-保留精确数据和预测性质，输出到 D:\Notes\outputs。
-```
+- 默认解码 `使用 research-report-reader 阅读这份 PDF，保留精确数据和预测性质，输出到 outputs。`
+- 匿名解读 `使用 research-report-reader 匿名解读这份 PDF，输出到 outputs。`
 
 输入一次一份文字版 PDF。无文字层扫描件不支持；密码保护且不可读取的文件需要先取得可正常打开的版本。文件包不自动安装到任何个人目录，不绑定 MCP、API 密钥、专属插件或某个型号的模型。
 
-官方规则参考：[Codex skills](https://learn.chatgpt.com/docs/build-skills)、[Claude Code skills](https://code.claude.com/docs/en/skills)。这些是安装说明的链接，实际研报笔记不显示来源链接。
+官方安装文档见 [Codex skills](https://learn.chatgpt.com/docs/build-skills) 与 [Claude Code skills](https://code.claude.com/docs/en/skills)。
 
 ## PDF 脚本
 
@@ -47,8 +45,8 @@ python scripts/pdf_tools.py new-note --output-dir "outputs"
 
 - `doctor` 检查三个原生程序能否运行。
 - `extract` 每次新建独立目录，不覆盖历史结果。默认使用系统临时目录；`--work-dir` 改为在指定父目录下建立临时子目录。逐页保存 UTF-8 文字及 `manifest.json`，保留空页/失败页的位置。
-- `render` 依据 manifest 读取原 PDF，先核对文件指纹。页码是从 1 开始的 PDF 物理页，仅内部使用。渲染输出采用新目录，不覆盖已有图片。DPI 范围为 72–300，默认 144。
-- `new-note` 独占创建含“整理中”标记的匿名文件。模型按输出模板填充并核对后，才可标为完整。
+- `render` 依据 manifest 读取原 PDF，先核对文件指纹。页码是从 1 开始的 PDF 物理页。渲染输出采用新目录。DPI 范围为 72–300，默认 144。
+- `new-note` 独占创建含“整理中”标记的笔记文件。模型按输出模板填充并核对后，才可标为完整。
 - 子命令支持 `--help`。PDF 操作支持 `--timeout`，默认每次调用 60 秒；超时不会静默跳过。
 - 输出为 JSON。原始工具诊断只保存在临时工作目录，错误摘要不回显 PDF 标题或输入文件名。
 
@@ -61,7 +59,7 @@ python scripts/pdf_tools.py new-note --output-dir "outputs"
 
 提取质量标记采用保守启发式，不能证明材料是扫描件或已经充分阅读。图片图表可能不触发标记，应由模型结合全文和渲染页面检查。
 
-临时文件含原始文字、诊断、文件路径和指纹。它们不应放入匿名笔记、共享压缩包或聊天附件。最终输出默认在调用工作区的 `outputs`，名称类似 `研报解读-20260101-120000-xxxxxxxx.md`，日期为处理时间，不是报告发布日期。
+临时文件中的原始文字、诊断、文件路径和指纹用于内部核对。最终笔记默认保存在调用工作区的 `outputs`，名称类似 `研报解读-20260101-120000-xxxxxxxx.md`。文件名日期取自处理时间。
 
 ## 检查与测试
 

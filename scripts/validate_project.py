@@ -18,7 +18,7 @@ ROOT_FILES = {
     "README.md", "LICENSE", "CONTRIBUTING.md", "THIRD_PARTY_NOTICES.md",
     ".gitignore", ".gitattributes", "VERSION", "requirements-dev.txt",
 }
-PUBLIC_DIRS = {"research-report-reader", "samples", "scripts", ".github"}
+PUBLIC_DIRS = {"research-report-reader", "samples", "scripts", "docs", ".github"}
 PRIVATE_PARTS = {".reading-work", ".validation", "outputs", "dist", "tmp", "__pycache__", ".venv", "venv"}
 FIXTURE_PDFS = {"synthetic-report.pdf", "blank-middle.pdf", "image-only.pdf", "password-protected.pdf", "broken.pdf"}
 TEXT_SUFFIXES = {".md", ".py", ".yml", ".yaml", ".json", ".txt"}
