@@ -39,6 +39,25 @@ class FileAndFailureTests(unittest.TestCase):
         self.assertEqual(Path(one["note"]).read_text(encoding="utf-8"), "existing user work")
         self.assertIn("整理中", Path(two["note"]).read_text(encoding="utf-8"))
 
+    def test_cli_creates_an_english_note(self):
+        result = subprocess.run(
+            [
+                sys.executable, str(ROOT / "scripts/pdf_tools.py"), "new-note",
+                "--output-dir", str(self.root), "--language", "en",
+            ],
+            capture_output=True,
+            check=True,
+            encoding="utf-8",
+        )
+        draft = json.loads(result.stdout)
+        self.assertEqual(draft["status"], "draft_created")
+        path = Path(draft["note"])
+        self.assertTrue(path.name.startswith("research-note-"))
+        self.assertEqual(path.suffix, ".md")
+        note = path.read_text(encoding="utf-8")
+        self.assertTrue(note.startswith("# Research Report Notes\n"))
+        self.assertIn("**Completion status**: In progress", note)
+
     def test_collision_retry_preserves_existing_content(self):
         fixed = mock.Mock(hex="f" * 32)
         moment = mock.Mock()

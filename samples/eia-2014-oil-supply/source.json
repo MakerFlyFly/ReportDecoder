@@ -11,5 +11,6 @@
   "pages": 8,
   "language": "en",
   "analysis": "decode.zh-CN.md",
-  "analysis_language": "zh-CN"
+  "analysis_language": "zh-CN",
+  "analysis_en": "decode.en.md"
 }

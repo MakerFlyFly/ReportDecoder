@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "research-report-reader"
 FILES = [
     "SKILL.md", "USAGE.md", "VALIDATION.md",
-    "assets/note-template.md", "references/analysis-rules.md", "references/examples.md",
+    "assets/note-template.md", "assets/note-template.en.md", "references/analysis-rules.md", "references/examples.md",
     "scripts/pdf_tools.py", "tests/test_pdf_tools.py", "tests/fixtures/build_fixtures.py",
     "tests/fixtures/synthetic-report.pdf", "tests/fixtures/blank-middle.pdf",
     "tests/fixtures/image-only.pdf", "tests/fixtures/password-protected.pdf", "tests/fixtures/broken.pdf",

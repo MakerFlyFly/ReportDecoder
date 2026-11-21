@@ -15,7 +15,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_FILES = {
-    "README.md", "LICENSE", "CONTRIBUTING.md", "THIRD_PARTY_NOTICES.md",
+    "README.md", "README.en.md", "LICENSE", "CONTRIBUTING.md", "THIRD_PARTY_NOTICES.md",
     ".gitignore", ".gitattributes", "VERSION", "requirements-dev.txt",
 }
 PUBLIC_DIRS = {"research-report-reader", "samples", "scripts", "docs", ".github"}
@@ -79,22 +79,27 @@ def validate_samples():
         data = json.loads(path.read_text(encoding="utf-8"))
         required = {"title", "publisher", "publication_date", "retrieved_date", "url", "rights_url", "rights_basis", "file", "sha256", "pages", "analysis"}
         require(required <= data.keys(), "Incomplete sample metadata: " + str(path))
-        for field in ("file", "analysis"):
+        note_fields = {"analysis": ("**完成状态**：完整", "**完成状态**：整理中")}
+        if "analysis_en" in data:
+            note_fields["analysis_en"] = ("**Completion status**: Complete", "**Completion status**: In progress")
+        for field in ("file", *note_fields):
             value = data[field]
             require(isinstance(value, str) and Path(value).name == value and value not in {".", ".."}, "Sample paths must be filenames")
         source = path.parent / data["file"]
-        analysis = path.parent / data["analysis"]
         raw = source.read_bytes()
         require(raw.startswith(b"%PDF-"), "Sample is not a PDF")
         require(hashlib.sha256(raw).hexdigest() == data["sha256"], "Public PDF hash mismatch: " + str(source))
         require(type(data["pages"]) is int and data["pages"] > 0, "Invalid sample page count")
         require(urlsplit(data["url"]).scheme == "https" and urlsplit(data["rights_url"]).scheme == "https", "Public provenance links must use HTTPS")
         require(bool(data["rights_basis"].strip()), "Sample rights basis is required")
-        note = analysis.read_text(encoding="utf-8")
-        require("**完成状态**：完整" in note and "整理中" not in note, "Sample analysis is not complete")
-        anchors = re.findall(r'<a id="([^"]+)"', note)
-        links = re.findall(r"\]\(#([^)]+)\)", note)
-        require(len(anchors) == len(set(anchors)) and not(set(links) - set(anchors)), "Broken sample navigation")
+        for field, (complete, in_progress) in note_fields.items():
+            analysis = path.parent / data[field]
+            note = analysis.read_text(encoding="utf-8")
+            lines = note.splitlines()
+            require(complete in lines and in_progress not in lines, "Sample analysis is not complete: " + analysis.name)
+            anchors = re.findall(r'<a id="([^"]+)"', note)
+            links = re.findall(r"\]\(#([^)]+)\)", note)
+            require(len(anchors) == len(set(anchors)) and not (set(links) - set(anchors)), "Broken sample navigation: " + analysis.name)
         require((path.parent / "README.md").is_file(), "Sample usage and attribution are required")
         allowed_pdfs.add(source.relative_to(ROOT).as_posix())
     return samples, allowed_pdfs

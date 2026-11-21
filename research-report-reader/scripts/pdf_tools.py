@@ -266,19 +266,26 @@ def render_pdf(manifest_file, pages, dpi=144, poppler_dir=None, timeout=60):
     return summary, (0 if not failed else (3 if rendered else 2))
 
 
-def new_note(output_dir):
+NOTE_DRAFTS = {
+    "zh-CN": ("研报解读", "# 研报阅读笔记\n\n**完成状态**：整理中\n"),
+    "en": ("research-note", "# Research Report Notes\n\n**Completion status**: In progress\n"),
+}
+
+
+def new_note(output_dir, language="zh-CN"):
+    prefix, draft = NOTE_DRAFTS[language]
     directory = Path(output_dir).expanduser().resolve()
     directory.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     for _ in range(100):
-        path = directory / ("研报解读-{}-{}.md".format(timestamp, uuid.uuid4().hex[:8]))
+        path = directory / "{}-{}-{}.md".format(prefix, timestamp, uuid.uuid4().hex[:8])
         try:
             with path.open("x", encoding="utf-8", newline="\n") as stream:
-                stream.write("# 研报阅读笔记\n\n**完成状态**：整理中\n")
+                stream.write(draft)
             return {"status": "draft_created", "note": str(path)}, 0
         except FileExistsError:
             continue
-    raise PdfToolError("output_collision", "未能分配新的匿名文件名；已有笔记未被覆盖。")
+    raise PdfToolError("output_collision", "未能分配新的笔记文件名，已有笔记保留。")
 
 
 def doctor(poppler_dir=None, timeout=60):
@@ -312,8 +319,9 @@ def main(argv=None):
     render.add_argument("--manifest", required=True)
     render.add_argument("--pages", required=True, help="1,3-5 or all")
     render.add_argument("--dpi", type=int, default=144)
-    reserve = sub.add_parser("new-note", help="Create an anonymous draft without overwriting files")
+    reserve = sub.add_parser("new-note", help="Create a note draft without overwriting files")
     reserve.add_argument("--output-dir", default="outputs")
+    reserve.add_argument("--language", choices=NOTE_DRAFTS, default="zh-CN", help="Language of the draft and filename (default: zh-CN)")
     for command in (check, extract, render):
         command.add_argument("--poppler-dir", help="Directory containing native Poppler executables")
         command.add_argument("--timeout", type=positive_seconds, default=60)
@@ -326,7 +334,7 @@ def main(argv=None):
         elif args.command == "render":
             result, code = render_pdf(args.manifest, args.pages, args.dpi, args.poppler_dir, args.timeout)
         else:
-            result, code = new_note(args.output_dir)
+            result, code = new_note(args.output_dir, args.language)
     except PdfToolError as exc:
         result, code = {"status": "error", "error_code": exc.code, "message": exc.message}, 2
     except (OSError, UnicodeError):

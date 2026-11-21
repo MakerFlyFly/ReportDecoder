@@ -25,6 +25,10 @@ Windows 中 `~` 通常指用户个人目录。Codex 也可按所在环境的现�
 
 - 默认解码 `使用 research-report-reader 阅读这份 PDF，保留精确数据和预测性质，输出到 outputs。`
 - 匿名解读 `使用 research-report-reader 匿名解读这份 PDF，输出到 outputs。`
+- 英文解码 `Use research-report-reader to decode this report and explain the evidence behind its conclusions.`
+- 指定英文和匿名 `请用 research-report-reader 将这份 PDF 匿名解读为英文。`
+
+笔记和聊天导读都跟随请求正文的语言。明确指定简体中文或英文时优先按指定语言输出，与 PDF 使用的语言无关。仅提供附件、路径或命令，或者无法判断请求正文语言时，用简体中文。
 
 输入一次一份文字版 PDF。无文字层扫描件不支持；密码保护且不可读取的文件需要先取得可正常打开的版本。文件包不自动安装到任何个人目录，不绑定 MCP、API 密钥、专属插件或某个型号的模型。
 
@@ -41,12 +45,13 @@ python scripts/pdf_tools.py extract "input.pdf" --work-dir "private-work"
 python scripts/pdf_tools.py render --manifest "<提取返回的manifest路径>" --pages "1,3-5"
 python scripts/pdf_tools.py render --manifest "<manifest路径>" --pages all --dpi 72
 python scripts/pdf_tools.py new-note --output-dir "outputs"
+python scripts/pdf_tools.py new-note --output-dir "outputs" --language en
 ```
 
 - `doctor` 检查三个原生程序能否运行。
 - `extract` 每次新建独立目录，不覆盖历史结果。默认使用系统临时目录；`--work-dir` 改为在指定父目录下建立临时子目录。逐页保存 UTF-8 文字及 `manifest.json`，保留空页/失败页的位置。
 - `render` 依据 manifest 读取原 PDF，先核对文件指纹。页码是从 1 开始的 PDF 物理页。渲染输出采用新目录。DPI 范围为 72–300，默认 144。
-- `new-note` 独占创建含“整理中”标记的笔记文件。模型按输出模板填充并核对后，才可标为完整。
+- `new-note` 独占创建草稿。`--language` 接受 `zh-CN` 和 `en`，省略时保持中文文件名和“整理中”标记。`en` 使用英文文件名和 `In progress` 标记。模型按相应模板写作并核对后，才将状态改为“完整”或 `Complete`。
 - 子命令支持 `--help`。PDF 操作支持 `--timeout`，默认每次调用 60 秒；超时不会静默跳过。
 - 输出为 JSON。原始工具诊断只保存在临时工作目录，错误摘要不回显 PDF 标题或输入文件名。
 
@@ -59,7 +64,7 @@ python scripts/pdf_tools.py new-note --output-dir "outputs"
 
 提取质量标记采用保守启发式，不能证明材料是扫描件或已经充分阅读。图片图表可能不触发标记，应由模型结合全文和渲染页面检查。
 
-临时文件中的原始文字、诊断、文件路径和指纹用于内部核对。最终笔记默认保存在调用工作区的 `outputs`，名称类似 `研报解读-20260101-120000-xxxxxxxx.md`。文件名日期取自处理时间。
+临时文件中的原始文字、诊断、文件路径和指纹用于内部核对。最终笔记默认保存在调用工作区的 `outputs`，中文文件名类似 `研报解读-20260101-120000-xxxxxxxx.md`，英文文件名类似 `research-note-20260101-120000-xxxxxxxx.md`。文件名日期取自处理时间。
 
 ## 检查与测试
 
